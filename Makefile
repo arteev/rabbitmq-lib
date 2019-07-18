@@ -4,7 +4,7 @@ GITHEAD=$(shell git rev-parse HEAD)
 LDFLAGS=-ldflags "-w -s -X main.Version=${VERSION} -X main.DateBuild=${BUILD_TIME}  -X main.GitHash=${GITHEAD}"
 OUTFILE=bin/librmq
 SRC=./src
-FILES=${SRC}/main.go
+FILES=${SRC}/main.go ${SRC}/rabbit.go
 PKG_NAME=github.com/arteev/rabbitmq-lib
 
 ifeq ($(OS), Windows_NT)
