@@ -4,6 +4,7 @@ import (
 	"github.com/streadway/amqp"
 	"log"
 	"sync"
+	"time"
 )
 
 type RabbitConnection struct {
@@ -14,10 +15,13 @@ type RabbitConnection struct {
 	*amqp.Connection
 }
 
-func NewRabbitConnection(connectionString string) (*RabbitConnection, error) {
+func NewRabbitConnection(connectionString string,timeout int) (*RabbitConnection, error) {
 	done := make(chan struct{}, 0)
 
-	conn, err := amqp.Dial(connectionString)
+	conn, err := amqp.DialConfig(connectionString,amqp.Config{
+		Dial:amqp.DefaultDial(time.Second*time.Duration(timeout)),
+	})
+
 	if err != nil {
 		return nil, err
 	}

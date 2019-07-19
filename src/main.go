@@ -39,8 +39,8 @@ func getObjectEx(addr uintptr) (interface{}, bool) {
 }
 
 //export Connect
-func Connect(connectionString string,autoReconnect bool) uintptr {
-	conn, err := NewRabbitConnection(connectionString)
+func Connect(connectionString string,timeout int) uintptr {
+	conn, err := NewRabbitConnection(connectionString,timeout)
 	if err != nil {
 		log.Println(err)
 		return 0
@@ -92,6 +92,7 @@ func ExchangeDeclare(channelPtr uintptr,
 		log.Println(err)
 		return false
 	}
+	log.Println("ExchangeDeclare",name,kind)
 	return true
 }
 
@@ -107,6 +108,7 @@ func QueueDeclare(channelPtr uintptr, name string, durable, autoDelete, exclusiv
 		log.Println(err)
 		return false
 	}
+	log.Println("QueueDeclare",name)
 	return true
 }
 
@@ -122,6 +124,7 @@ func QueueBind(channelPtr uintptr, name, key, exchange string, noWait bool) bool
 		log.Println(err)
 		return false
 	}
+	log.Println("QueueBind",name,key,exchange)
 	return true
 }
 
@@ -140,6 +143,7 @@ func Publish(channelPtr uintptr, exchange, key string, mandatory, immediate bool
 		log.Println(err)
 		return false
 	}
+	log.Println("QueueBind",exchange,key,string(msg))
 	return true
 }
 
