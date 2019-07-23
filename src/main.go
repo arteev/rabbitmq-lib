@@ -81,13 +81,18 @@ func NewChannel(connPtr uintptr) uintptr {
 
 //export ExchangeDeclare
 func ExchangeDeclare(channelPtr uintptr,
-	name, kind string, durable, autoDelete, internal, noWait bool) bool {
+	name, kind string, durable, autoDelete, internal, noWait bool, args uintptr) bool {
 	obj, ok := getObjectEx(channelPtr)
 	if !ok {
 		return false
 	}
 	channel := obj.(*amqp.Channel)
-	err := channel.ExchangeDeclare(name, kind, durable, autoDelete, internal, noWait, nil)
+	argsRaw,ok:=getObjectEx(args)
+	var mArgs map[string]interface{}
+	if ok  {
+		mArgs=argsRaw.(map[string]interface{})
+	}
+	err := channel.ExchangeDeclare(name, kind, durable, autoDelete, internal, noWait, mArgs)
 	if err != nil {
 		log.Println(err)
 		return false
@@ -97,13 +102,19 @@ func ExchangeDeclare(channelPtr uintptr,
 }
 
 //export QueueDeclare
-func QueueDeclare(channelPtr uintptr, name string, durable, autoDelete, exclusive, noWait bool) bool {
+func QueueDeclare(channelPtr uintptr, name string, durable, autoDelete, exclusive, noWait bool,args uintptr) bool {
 	obj, ok := getObjectEx(channelPtr)
 	if !ok {
 		return false
 	}
+
+	argsRaw,ok:=getObjectEx(args)
+	var mArgs map[string]interface{}
+	if ok  {
+		mArgs=argsRaw.(map[string]interface{})
+	}
 	channel := obj.(*amqp.Channel)
-	_, err := channel.QueueDeclare(name, durable, autoDelete, exclusive, noWait, nil)
+	_, err := channel.QueueDeclare(name, durable, autoDelete, exclusive, noWait,mArgs)
 	if err != nil {
 		log.Println(err)
 		return false
@@ -113,13 +124,18 @@ func QueueDeclare(channelPtr uintptr, name string, durable, autoDelete, exclusiv
 }
 
 //export QueueBind
-func QueueBind(channelPtr uintptr, name, key, exchange string, noWait bool) bool {
+func QueueBind(channelPtr uintptr, name, key, exchange string, noWait bool,args uintptr) bool {
 	obj, ok := getObjectEx(channelPtr)
 	if !ok {
 		return false
 	}
 	channel := obj.(*amqp.Channel)
-	err := channel.QueueBind(name, key, exchange, noWait, nil)
+	argsRaw,ok:=getObjectEx(args)
+	var mArgs map[string]interface{}
+	if ok  {
+		mArgs=argsRaw.(map[string]interface{})
+	}
+	err := channel.QueueBind(name, key, exchange, noWait, mArgs)
 	if err != nil {
 		log.Println(err)
 		return false
@@ -129,13 +145,15 @@ func QueueBind(channelPtr uintptr, name, key, exchange string, noWait bool) bool
 }
 
 //export Publish
-func Publish(channelPtr uintptr, exchange, key string, mandatory, immediate bool, msg []byte) bool {
+func Publish(channelPtr uintptr, exchange, key string, mandatory, immediate bool, messageID string, msg []byte) bool {
 	obj, ok := getObjectEx(channelPtr)
 	if !ok {
 		return false
 	}
 	channel := obj.(*amqp.Channel)
 	err := channel.Publish(exchange, key, mandatory, immediate, amqp.Publishing{
+		MessageId:messageID,
+		DeliveryMode: amqp.Persistent,
 		ContentType: "text/plain",
 		Body:        msg,
 	})
@@ -202,6 +220,24 @@ func CloseLog() {
 	}
 	logCommon.Close()
 	logCommon = nil
+}
+
+//export MapArgs
+func MapArgs() uintptr {
+	m := map[string]interface{}{}
+	ptr := uintptr(unsafe.Pointer(&m))
+	putObject(ptr, m)
+	return ptr 
+}
+
+//export MapArgsAdd
+func MapArgsAdd(ptr uintptr ,key string,value string) {
+	obj, ok := getObjectEx(ptr)
+	if !ok {
+		return
+	}
+	m := obj.(map[string]interface{})
+	m[key]=value
 }
 
 func main() {
