@@ -7,16 +7,18 @@ import (
 )
 
 type Logger struct {
-	f *os.File
+	f io.WriteCloser
 }
 
+var OpenFile = os.OpenFile
+
 func New(fileName string) (*Logger, error) {
-	f,err := os.OpenFile(fileName,os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := OpenFile(fileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	newLogger := &Logger{
-		f:f,
+		f: f,
 	}
 	return newLogger, nil
 }
