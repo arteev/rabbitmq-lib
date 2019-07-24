@@ -3,7 +3,6 @@ package main
 import "C"
 
 import (
-	"fmt"
 	"github.com/arteev/rabbitmq-lib/src/logger"
 	"github.com/arteev/rabbitmq-lib/src/rabbit"
 	"log"
@@ -89,7 +88,7 @@ func ExchangeDeclare(channelPtr uintptr,
 	if !ok {
 		return false
 	}
-	channel := obj.(*amqp.Channel)
+	channel := obj.(rabbit.Channel)
 	argsRaw, ok := getObjectEx(args)
 	var mArgs map[string]interface{}
 	if ok {
@@ -116,7 +115,7 @@ func QueueDeclare(channelPtr uintptr, name string, durable, autoDelete, exclusiv
 	if ok {
 		mArgs = argsRaw.(map[string]interface{})
 	}
-	channel := obj.(*amqp.Channel)
+	channel := obj.(rabbit.Channel)
 	log.Println("QueueDeclare", channelPtr, name, mArgs)
 	_, err := channel.QueueDeclare(name, durable, autoDelete, exclusive, noWait, mArgs)
 	if err != nil {
@@ -132,7 +131,7 @@ func QueueBind(channelPtr uintptr, name, key, exchange string, noWait bool, args
 	if !ok {
 		return false
 	}
-	channel := obj.(*amqp.Channel)
+	channel := obj.(rabbit.Channel)
 	argsRaw, ok := getObjectEx(args)
 	var mArgs map[string]interface{}
 	if ok {
@@ -154,7 +153,7 @@ func Publish(channelPtr uintptr, exchange, key string, mandatory, immediate bool
 	if !ok {
 		return false
 	}
-	channel := obj.(*amqp.Channel)
+	channel := obj.(rabbit.Channel)
 	err := channel.Publish(exchange, key, mandatory, immediate, amqp.Publishing{
 		MessageId:    messageID,
 		DeliveryMode: amqp.Persistent,
@@ -192,7 +191,7 @@ func CloseChannel(ptr uintptr) {
 	if !ok {
 		return
 	}
-	channel := obj.(*amqp.Channel)
+	channel := obj.(rabbit.Channel)
 	channel.Close()
 	log.Println("Channel closed", ptr)
 }
@@ -204,7 +203,7 @@ func InitLog(name string) bool {
 	}
 	newLog, err := logger.New(name)
 	if err != nil {
-		fmt.Println(name, err)
+		log.Println(name, err)
 		return false
 	}
 	newLog.ApplyToStdLog()

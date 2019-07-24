@@ -27,6 +27,12 @@ test:
 	@GO111MODULE=on go test -v ${SRC}/...
 
 
+cover:
+	@echo " >  Running tests with coverage..."
+	@GO111MODULE=on go test -coverprofile=cover.out `go list ./... | grep -v mock` && grep -v mock cover.out > coverclean.out  &&  go tool cover -func=coverclean.out
+	@rm -f cover.out
+	@rm -f coverclean.out
+
 mock-rabbit:
 	mockgen  -package=rabbit -self_package=${PKG_NAME}/src/rabbit ${PKG_NAME}/src/rabbit Channel > src/rabbit/_mockchannel.go
 	rm -f src/rabbit/mockchannel.go
