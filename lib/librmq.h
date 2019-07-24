@@ -38,8 +38,8 @@ typedef int GoInt32;
 typedef unsigned int GoUint32;
 typedef long long GoInt64;
 typedef unsigned long long GoUint64;
-typedef GoInt32 GoInt;
-typedef GoUint32 GoUint;
+typedef GoInt64 GoInt;
+typedef GoUint64 GoUint;
 typedef __SIZE_TYPE__ GoUintptr;
 typedef float GoFloat32;
 typedef double GoFloat64;
@@ -50,7 +50,7 @@ typedef double _Complex GoComplex128;
   static assertion to make sure the file is being used on architecture
   at least with matching size of GoInt.
 */
-typedef char _check_for_32_bit_pointer_matching_GoInt[sizeof(void*)==32/8 ? 1:-1];
+typedef char _check_for_64_bit_pointer_matching_GoInt[sizeof(void*)==64/8 ? 1:-1];
 
 #ifndef GO_CGO_GOSTRING_TYPEDEF
 typedef _GoString_ GoString;
@@ -75,13 +75,13 @@ extern GoUint8 Connected(GoUintptr p0);
 
 extern GoUintptr NewChannel(GoUintptr p0);
 
-extern GoUint8 ExchangeDeclare(GoUintptr p0, GoString p1, GoString p2, GoUint8 p3, GoUint8 p4, GoUint8 p5, GoUint8 p6);
+extern GoUint8 ExchangeDeclare(GoUintptr p0, GoString p1, GoString p2, GoUint8 p3, GoUint8 p4, GoUint8 p5, GoUint8 p6, GoUintptr p7);
 
-extern GoUint8 QueueDeclare(GoUintptr p0, GoString p1, GoUint8 p2, GoUint8 p3, GoUint8 p4, GoUint8 p5);
+extern GoUint8 QueueDeclare(GoUintptr p0, GoString p1, GoUint8 p2, GoUint8 p3, GoUint8 p4, GoUint8 p5, GoUintptr p6);
 
-extern GoUint8 QueueBind(GoUintptr p0, GoString p1, GoString p2, GoString p3, GoUint8 p4);
+extern GoUint8 QueueBind(GoUintptr p0, GoString p1, GoString p2, GoString p3, GoUint8 p4, GoUintptr p5);
 
-extern GoUint8 Publish(GoUintptr p0, GoString p1, GoString p2, GoUint8 p3, GoUint8 p4, GoSlice p5);
+extern GoUint8 Publish(GoUintptr p0, GoString p1, GoString p2, GoUint8 p3, GoUint8 p4, GoString p5, GoSlice p6);
 
 extern void FreeObject(GoUintptr p0);
 
@@ -94,6 +94,10 @@ extern GoUint8 InitLog(GoString p0);
 extern void PrintLog(GoString p0);
 
 extern void CloseLog();
+
+extern GoUintptr MapArgs();
+
+extern GoUint8 MapArgsAdd(GoUintptr p0, GoString p1, GoString p2);
 
 #ifdef __cplusplus
 }
