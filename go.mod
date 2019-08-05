@@ -1,4 +1,4 @@
-module github.com/arteev/rabbitmq-lib
+module ci.drugs.main/okit/rabbitmq-shared-lib
 
 go 1.12
 

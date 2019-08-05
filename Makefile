@@ -41,3 +41,9 @@ mock-rabbit:
 	mockgen  -package=rabbit -self_package=${PKG_NAME}/src/rabbit  ${PKG_NAME}/src/rabbit Connection > src/rabbit/_mockrmq.go
 	rm -f src/rabbit/mockrmq.go
 	mv src/rabbit/_mockrmq.go src/rabbit/mockrmq.go
+
+
+reformat:
+	@echo " >  Formatting source texts..."
+	go fmt ./...
+	goimports -w ./...

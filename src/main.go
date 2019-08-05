@@ -3,8 +3,8 @@ package main
 import "C"
 
 import (
-	"github.com/arteev/rabbitmq-lib/src/logger"
-	"github.com/arteev/rabbitmq-lib/src/rabbit"
+	"ci.drugs.main/okit/rabbitmq-shared-lib/src/logger"
+	"ci.drugs.main/okit/rabbitmq-shared-lib/src/rabbit"
 	"log"
 	"sync"
 	"unsafe"
@@ -42,7 +42,7 @@ func getObjectEx(addr uintptr) (interface{}, bool) {
 
 //export Connect
 func Connect(connectionString string, timeout int) uintptr {
-	conn, err := rabbit.NewRabbitConnection(nil,connectionString, timeout)
+	conn, err := rabbit.NewRabbitConnection(nil, connectionString, timeout)
 	if err != nil {
 		log.Println("Connect error:", err)
 		return 0

@@ -8,20 +8,18 @@ import (
 	"testing"
 )
 
-
 type mockFile struct {
 	InvokedClose bool
 }
 
 func (f *mockFile) Write(p []byte) (n int, err error) {
-	return 0,errors.New("write error")
+	return 0, errors.New("write error")
 }
 
 func (f *mockFile) Close() error {
 	f.InvokedClose = true
 	return errors.New("close error")
 }
-
 
 func TestLogger(t *testing.T) {
 
@@ -48,18 +46,18 @@ func TestLogger(t *testing.T) {
 		return want, nil
 	}
 	got, err := New(testFile)
-	assert.NotNil(t,got)
-	assert.Equal(t,want,got.f)
-	assert.Equal(t,got.GetOutput(),got.f)
+	assert.NotNil(t, got)
+	assert.Equal(t, want, got.f)
+	assert.Equal(t, got.GetOutput(), got.f)
 
-	mock:=&mockFile{}
+	mock := &mockFile{}
 	got.f = mock
-	err=got.Close()
-	assert.True(t,mock.InvokedClose)
-	assert.EqualError(t,err,"close error")
+	err = got.Close()
+	assert.True(t, mock.InvokedClose)
+	assert.EqualError(t, err, "close error")
 
 	got.ApplyToStdLog()
-	err=log.Output(1,"test")
-	assert.EqualError(t,err,"write error")
+	err = log.Output(1, "test")
+	assert.EqualError(t, err, "write error")
 
 }

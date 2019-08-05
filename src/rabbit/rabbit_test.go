@@ -42,11 +42,10 @@ func TestNewRabbitConnection(t *testing.T) {
 	wantError = errors.New("close error")
 	mockConnection.EXPECT().Close().Return(wantError)
 	err = rabbit.Close()
-	assert.EqualError(t, err,wantError.Error())
+	assert.EqualError(t, err, wantError.Error())
 	assert.False(t, rabbit.Connected())
 
 }
-
 
 func TestRabbitConnectionWaitClose(t *testing.T) {
 	log.SetOutput(ioutil.Discard)
@@ -54,7 +53,7 @@ func TestRabbitConnectionWaitClose(t *testing.T) {
 	defer ctrl.Finish()
 	mockConnection := NewMockConnection(ctrl)
 	var chError chan *amqp.Error
-	mockConnection.EXPECT().NotifyClose(gomock.Any()).Do(func(receiver chan *amqp.Error) chan *amqp.Error{
+	mockConnection.EXPECT().NotifyClose(gomock.Any()).Do(func(receiver chan *amqp.Error) chan *amqp.Error {
 		chError = receiver
 		return receiver
 	}).AnyTimes()
@@ -63,23 +62,23 @@ func TestRabbitConnectionWaitClose(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, rabbit)
 
-	time.Sleep(time.Millisecond*300)
+	time.Sleep(time.Millisecond * 300)
 	assert.True(t, rabbit.Connected())
 	chError <- amqp.ErrClosed
-	time.Sleep(time.Millisecond*200)
+	time.Sleep(time.Millisecond * 200)
 	assert.False(t, rabbit.Connected())
 
 	//check done
 	rabbit, err = NewRabbitConnection(mockConnection, "", 10)
 	assert.NoError(t, err)
 	assert.NotNil(t, rabbit)
-	time.Sleep(time.Millisecond*300)
+	time.Sleep(time.Millisecond * 300)
 	assert.True(t, rabbit.Connected())
 	mockConnection.EXPECT().Close()
 	rabbit.Close()
-	time.Sleep(time.Millisecond*100)
+	time.Sleep(time.Millisecond * 100)
 	assert.False(t, rabbit.Connected())
-	_,ok := <- rabbit.done
-	assert.False(t,ok)
+	_, ok := <-rabbit.done
+	assert.False(t, ok)
 
 }

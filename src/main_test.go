@@ -1,9 +1,9 @@
 package main
 
 import (
+	"ci.drugs.main/okit/rabbitmq-shared-lib/src/logger"
+	"ci.drugs.main/okit/rabbitmq-shared-lib/src/rabbit"
 	"errors"
-	"github.com/arteev/rabbitmq-lib/src/logger"
-	"github.com/arteev/rabbitmq-lib/src/rabbit"
 	"github.com/golang/mock/gomock"
 	"github.com/streadway/amqp"
 	"github.com/stretchr/testify/assert"
@@ -174,8 +174,8 @@ func TestLog(t *testing.T) {
 	got := InitLog(nameLog)
 	assert.False(t, got)
 
-	r,_,err:=os.Pipe()
-	assert.NoError(t,err)
+	r, _, err := os.Pipe()
+	assert.NoError(t, err)
 
 	logger.OpenFile = func(name string, flag int, perm os.FileMode) (*os.File, error) {
 		return r, nil
@@ -188,5 +188,5 @@ func TestLog(t *testing.T) {
 	PrintLog("test")
 
 	CloseLog()
-	assert.Nil(t,logCommon)
+	assert.Nil(t, logCommon)
 }
